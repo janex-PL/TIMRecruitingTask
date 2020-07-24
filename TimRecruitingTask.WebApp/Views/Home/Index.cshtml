@@ -1,0 +1,14 @@
+﻿@{
+    ViewData["Title"] = "Home";
+}
+
+<div class="text-center jumbotron bg-dark">
+    <h1 class="display-4 text-light">EuropePMC Publications</h1>
+    <hr />
+    <form asp-action="Search" method="get" class="form-inline row">
+        <div class="form-group col-6 offset-1 mb-0">
+            <input type="search" name="SearchQuery" class="form-control w-100" id="searchQuery" placeholder="Search ..." />
+        </div>
+        <button type="submit" class="btn btn-secondary col-4">Search</button>
+    </form>
+</div>

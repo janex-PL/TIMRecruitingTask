@@ -1,0 +1,10 @@
+﻿@model List<PublicationItemViewModel>
+@foreach (var item in Model)
+{
+    <tr>
+        <td>@item.Title</td>
+        <td>@item.Authors</td>
+        <td>@item.FirstPublicationDate</td> 
+    </tr>
+}
+

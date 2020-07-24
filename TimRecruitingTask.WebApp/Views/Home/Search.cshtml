@@ -1,0 +1,84 @@
+﻿@model PublicationCollectionViewModel
+@{
+    ViewData["Title"] = "Search";
+}
+
+
+@if (Model.PublicationItems.Count == 0)
+{
+    <h1 class="display-4 text-light text-center">There are no matching results</h1>
+    <div class="row">
+        <button id="backBtn" type="button" class="btn btn-light col-2 offset-5" onclick="location.href='@Url.Action("Index", "Home")'">Try another phrase</button>
+    </div>
+
+}
+else
+{
+    <h1 class="display-4 text-light">Displaying results for: @Model.SearchQuery</h1>
+    <table class="table rounded table-striped table-hover table-dark table-sm text-center">
+        <thead>
+        <tr>
+            <th scope="col">Title</th>
+            <th scope="col">Authors</th>
+            <th scope="col">Publication Date</th>
+        </tr>
+        </thead>
+        <tbody>
+        @{await Html.RenderPartialAsync("PublicationsList", Model.PublicationItems);}
+        </tbody>
+    </table>
+    <div class="row" id="progress" style="display:none;">
+        <img class="col-4 offset-4" src="~/spinner.gif" alt="Loading" />
+    </div>
+    <div id="progressmarker"></div>
+
+
+
+    <script type="text/javascript">
+        var nextCursor = "@Model.NextCursor";
+        var searchQuery = "@Model.SearchQuery";
+        var _incallback = false;
+        $(window).scroll(function () {
+            var hT = $('#progressmarker').offset().top,
+                hH = $('#progressmarker').outerHeight(),
+                wH = $(window).height(),
+                wS = $(window).scrollTop();
+
+            if (nextCursor && nextCursor !== "*" && !_incallback) {
+                if (wS > (hT + hH - wH)) {
+                    GetData();
+                }
+            }
+        });
+
+        function GetData() {
+            _incallback = true;
+            $.ajax({
+                type: 'GET',
+                url: '/home/LoadNextPublications',
+                data: {
+                    "searchQuery": searchQuery,
+                    "nextCursor": nextCursor
+                },
+                success: function (data) {
+                    if (data != null) {
+                        console.log(data.htmlString);
+                        $('tbody').append(data.htmlString);
+                        nextCursor = data.nextCursor;
+                    }
+                },
+                beforeSend: function () {
+                    $("#progress").show();
+                },
+                complete: function () {
+                    $("#progress").hide();
+                    window._incallback = false;
+                },
+                error: function () {
+                    window._incallback = false;
+                }
+            });
+        }
+    </script>
+}
+
